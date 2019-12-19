@@ -20,8 +20,8 @@ class Person(db.Model):
         The first name of the person
     timestamp : datetime
         The UTC timestamp of when a person was added/updated to the table
-    notes : db.relationship
-        The relationship between Person and Note
+    notes : list
+        List of notes created by a Person
     '''
     __tablename__ = 'person'
     person_id = db.Column(db.Integer, primary_key=True)
@@ -32,8 +32,9 @@ class Person(db.Model):
         default=datetime.utcnow,
         onupdate=datetime.utcnow
     )
+    # Set up the relationship between Person and Note
     notes = db.relationship(
-        # 'Note' defines the SQLAlchemy class Person is related to
+        # 'Note' defines what the SQLAlchemy class Person is related to
         # We use string as a forward reference which handles problems caused
         # by something that is needed but isn't defined until later in the code
         'Note',
