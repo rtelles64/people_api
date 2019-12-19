@@ -7,7 +7,7 @@ from flask_sqlalchemy import SQLAlchemy
 from flask_marshmallow import Marshmallow
 
 # This points to the directory the program is running in
-basedir = os.path.abspath(os.path.direname(__file__))
+basedir = os.path.abspath(os.path.dirname(__file__))
 
 # Create the Connexion application instance
 connex_app = connexion.App(__name__, specification_dir=basedir)
