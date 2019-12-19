@@ -1,0 +1,31 @@
+2019-12-18 21:17:50,625 INFO sqlalchemy.engine.base.Engine SELECT CAST('test plain returns' AS VARCHAR(60)) AS anon_1
+2019-12-18 21:17:50,625 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,626 INFO sqlalchemy.engine.base.Engine SELECT CAST('test unicode returns' AS VARCHAR(60)) AS anon_1
+2019-12-18 21:17:50,626 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,628 INFO sqlalchemy.engine.base.Engine PRAGMA main.table_info("person")
+2019-12-18 21:17:50,628 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,629 INFO sqlalchemy.engine.base.Engine PRAGMA temp.table_info("person")
+2019-12-18 21:17:50,630 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,631 INFO sqlalchemy.engine.base.Engine 
+CREATE TABLE person (
+	person_id INTEGER NOT NULL, 
+	lname VARCHAR(32), 
+	fname VARCHAR(32), 
+	timestamp DATETIME, 
+	PRIMARY KEY (person_id)
+)
+
+
+2019-12-18 21:17:50,631 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,633 INFO sqlalchemy.engine.base.Engine COMMIT
+2019-12-18 21:17:50,633 INFO sqlalchemy.engine.base.Engine CREATE INDEX ix_person_lname ON person (lname)
+2019-12-18 21:17:50,634 INFO sqlalchemy.engine.base.Engine ()
+2019-12-18 21:17:50,635 INFO sqlalchemy.engine.base.Engine COMMIT
+2019-12-18 21:17:50,639 INFO sqlalchemy.engine.base.Engine BEGIN (implicit)
+2019-12-18 21:17:50,640 INFO sqlalchemy.engine.base.Engine INSERT INTO person (lname, fname, timestamp) VALUES (?, ?, ?)
+2019-12-18 21:17:50,640 INFO sqlalchemy.engine.base.Engine ('Farrell', 'Doug', '2019-12-19 05:17:50.640592')
+2019-12-18 21:17:50,641 INFO sqlalchemy.engine.base.Engine INSERT INTO person (lname, fname, timestamp) VALUES (?, ?, ?)
+2019-12-18 21:17:50,641 INFO sqlalchemy.engine.base.Engine ('Brockman', 'Kent', '2019-12-19 05:17:50.641777')
+2019-12-18 21:17:50,642 INFO sqlalchemy.engine.base.Engine INSERT INTO person (lname, fname, timestamp) VALUES (?, ?, ?)
+2019-12-18 21:17:50,642 INFO sqlalchemy.engine.base.Engine ('Easter', 'Bunny', '2019-12-19 05:17:50.642241')
+2019-12-18 21:17:50,642 INFO sqlalchemy.engine.base.Engine COMMIT
