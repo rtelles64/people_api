@@ -3,7 +3,8 @@
 import os
 
 from config import db
-from models import Person
+from datetime import datetime
+from models import Person, Note
 
 # Data to initialize database with
 PEOPLE = [
@@ -51,7 +52,21 @@ db.create_all()
 
 # Iterate over the PEOPLE structure and populate the database
 for person in PEOPLE:
-    p = Person(lname=person['lname'], fname=person['fname'])
+    p = Person(lname=person.get("lname"), fname=person.get("fname"))
+
+    # Add the notes for the person
+    for note in person.get("notes"):
+        content, timestamp = note
+        # NOTE: Working with the notes collection in Person p is like working
+        #       with any other list in Python. SQLAlchemy takes care of the
+        #       underlying one-to-many relationship
+        p.notes.append(
+            Note(
+                content=content,
+                timestamp=datetime.strptime(timestamp, "%Y-%m-%d %H:%M:%S"),
+            )
+        )
+
     db.session.add(p)
 
 # At this point no data is added to the database, but is saved within the
