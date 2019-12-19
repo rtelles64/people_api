@@ -37,7 +37,7 @@ paths:
                         items:
                             properties:
                                 person_id:
-                                    type: string
+                                    type: integer
                                     description: Id of the person
                                 fname:
                                     type: string
@@ -48,6 +48,22 @@ paths:
                                 timestamp:
                                     type: string
                                     description: Create/Update timestamp of the person
+                                notes:
+                                    type: array
+                                    items:
+                                        properties:
+                                            person_id:
+                                                type: integer
+                                                description: Id of person this note is associated with
+                                            note_id:
+                                                type: integer
+                                                description: Id of this note
+                                            content:
+                                                type: string
+                                                description: content of this note
+                                            timestamp:
+                                                type: string
+                                                description: Create/Update timestamp of this note
         post:
             operationId: people.create
             tags:
@@ -74,7 +90,7 @@ paths:
                     schema:
                         properties:
                             person_id:
-                                type: string
+                                type: integer
                                 description: Id of the person
                             fname:
                                 type: string
