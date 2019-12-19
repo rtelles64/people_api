@@ -3,6 +3,10 @@
 # and the read function within the module when the API gets an HTTP GET
 # This means this file must exist and contain a read() function
 
+# Project modules
+from config import db
+from models import Person, PersonSchema
+
 # System modules
 from datetime import datetime
 
@@ -50,39 +54,49 @@ def read_all():
 
     Returns
     -------
-    list
-        A sorted list of people
+    str
+        A JSON string of list of people ordered by last name
     '''
     # Create list of people from our data
-    return [PEOPLE[key] for key in sorted(PEOPLE.keys())]
+    people = Person.query.order_by(Person.lname).all()
+
+    # Serialize the data for the response
+    # many = True tells PersonSchema to expect an iterable to serialize
+    person_schema = PersonSchema(many=True)
+
+    # Return an object having a data attribute that Connexion can convert to
+    # JSON
+    return person_schema.dump(people).data
 
 
 # Create handler for our read where an lname parameter is provided
-def read_one(lname):
+def read_one(person_id):
     '''
-    This function responds to a request for /api/people/{lname} with one
+    This function responds to a request for /api/people/{person_id} with one
     matching person from people
 
     Parameters
     ----------
-    lname: str
-        Last name of person to find
+    person_id: int
+        ID of person to find
 
     Returns
     -------
-    PEOPLE
-        Person matching last name
+    Person
+        Person matching ID
     '''
-    # Does the person exist in people?
-    if lname in PEOPLE:
-        person = PEOPLE.get(lname)
+    # Get the person requested
+    person = Person.query.filter(Person.person_id == person_id).one_or_none()
+
+    # Did we find a person?
+    if person is not None:
+        # Serialize the data for the response
+        person_schema = PersonSchema()
+
+        return person_schema.dump(person).data
     # Otherwise, nope, not found
     else:
-        abort(
-            404, "Person with last name {lname} not found".format(lname=lname)
-        )
-
-    return person
+        abort(404, f'Person with Id: {person_id} not found')
 
 
 def create(person):
@@ -92,36 +106,39 @@ def create(person):
 
     Parameters
     ----------
-    person: PERSON
+    person: Person
         Person to create in people structure
 
     Returns
     -------
     201
         On success
-    406
+    409
         On person exists
     '''
-    lname = person.get("lname", None)
-    fname = person.get("fname", None)
+    fname = person.get("fname")
+    lname = person.get("lname")
 
-    # Does the person exist already?
-    if lname not in PEOPLE and lname is not None:
-        PEOPLE[lname] = {
-            "lname": lname,
-            "fname": fname,
-            "timestamp": get_timestamp(),
-        }
+    existing_person = Person.query \
+        .filter(Person.fname == fname) \
+        .filter(Person.lname == lname) \
+        .one_or_none()
 
-        return make_response(
-            "{lname} successfully created".format(lname=lname), 201
-        )
+    # Can we insert this person?
+    if existing_person is None:
+        # Create a person instance using the schema and the passed-in person
+        schema = PersonSchema()
+        new_person = schema.load(person, session=db.session).data
+
+        # Add the person to the database
+        db.session.add(new_person)
+        db.session.commit()
+
+        # Serialize and return the newly created person in the response
+        return schema.dump(new_person).data, 201
     # Otherwise, they exist, that's an error
     else:
-        abort(
-            406,
-            "Person with last name {lname} already exists!".format(lname=lname),
-        )
+        abort(409, f'Person {fname} {lname} already exists!')
 
 
 def update(lname, person):
