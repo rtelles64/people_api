@@ -27,8 +27,11 @@ class Person(db.Model):
     person_id = db.Column(db.Integer, primary_key=True)
     lname = db.Column(db.String(32), index=True)
     fname = db.Column(db.String(32))
-    timestamp = db.Column(db.DateTime, default=datetime.utcnow,
-                          onupdate=datetime.utcnow)
+    timestamp = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
     notes = db.relationship(
         # 'Note' defines the SQLAlchemy class Person is related to
         # We use string as a forward reference which handles problems caused
@@ -56,6 +59,40 @@ class Person(db.Model):
         # objects in an unknown order. desc() sorts notes in descending order
         # (ascending is the default)
         order_by='desc(Note.timestamp)'
+    )
+
+
+class Note(db.Model):
+    '''
+    Class used to represent a Note
+
+    Parent: db.Model
+
+    Attributes
+    ----------
+    __tablename__ : str
+        A string that states the name of the table
+    note_id : int
+        The unique id of a note in the note table
+    person_id : int
+        A number corresponding to the owner of the note
+    content : str
+        The actual text of the note
+    timestamp : datetime
+        The UTC timestamp of when a note was added/updated to the table
+    '''
+    __tablename__ = 'note'
+    note_id = db.Column(db.Integer, primary_key=True)
+    # Relate the Note class to the Person class using person.person_id
+    # This and Person.notes are how SQLAlchemy knows what to do when
+    # interacting with Person and Note objects
+    person_id = db.Column(db.Integer, db.ForeignKey('person.person_id'))
+    # nullable=False indicates it's ok to create a new empty note
+    content = db.Column(db.String, nullable=False)
+    timestamp = db.Column(
+        db.DateTime,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
     )
 
 
