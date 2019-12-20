@@ -133,6 +133,22 @@ paths:
                             timestamp:
                                 type: string
                                 description: Creation/Update timestamp of the person record
+                            notes:
+                                type: array
+                                items:
+                                    properties:
+                                        person_id:
+                                            type: integer
+                                            description: Id of person this note is associated with
+                                        note_id:
+                                            type: integer
+                                            description: Id of this note
+                                        content:
+                                            type: string
+                                            description: Content of this note
+                                        timestamp:
+                                            type: string
+                                            description: Create/Update timestamp of this note
         put:
             operationId: people.update
             tags:
@@ -162,7 +178,7 @@ paths:
                     schema:
                         properties:
                             person_id:
-                                type: string
+                                type: integer
                                 description: Id of the person in the database
                             fname:
                                 type: string
