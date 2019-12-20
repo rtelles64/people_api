@@ -1,6 +1,9 @@
 from datetime import datetime
 from config import db, ma
 
+# NOTE: Marshmallow is the module that translates SQLAlchemy objects into
+#       Python objects suitable for creating JSON strings
+
 
 class Person(db.Model):
     '''
@@ -103,6 +106,11 @@ class PersonSchema(ma.ModelSchema):
     formats
 
     Parent: ma.ModelSchema
+
+    Attributes
+    ----------
+    notes : list
+        List of notes related to a Person, default is empty list
     '''
     class Meta:
         '''
@@ -120,3 +128,7 @@ class PersonSchema(ma.ModelSchema):
         '''
         model = Person
         sqla_session = db.session
+
+    # RECALL: many = True indicates a one-to-many relationship, so Marshmallow
+    #         will serialize all related notes
+    notes = fields.Nested('PersonNoteSchema', default=[], many=True)
