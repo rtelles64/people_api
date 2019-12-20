@@ -204,3 +204,42 @@ paths:
             responses:
                 200:
                     description: Successfully deleted a person
+
+    /notes:
+        get:
+            operationId: notes.read_all
+            tags:
+                - notes
+            summar: Read the entire set of notes for all people, sorted by timestamp
+            description: Read the entire set of notes for all people, sorted by timestamp
+            responses:
+                200:
+                    description: Successfully read notes for all people operation
+                    schema:
+                        type: array
+                        items:
+                            properties:
+                                note_id:
+                                    type: integer
+                                    description: Id of the note
+                                content:
+                                    type: string
+                                    description: Content of the note
+                                timestamp:
+                                    type: string
+                                    description: Create/Update timestamp of the note
+                                person:
+                                    type: object
+                                    properties:
+                                        person_id:
+                                            type: integer
+                                            description: Id of associated person
+                                        fname:
+                                            type: string
+                                            description: First name of associated person
+                                        lname:
+                                            type: string
+                                            description: Last name of associated person
+                                        timestamp:
+                                            type: string
+                                            description: Create/Update timestamp of associated person
