@@ -243,3 +243,44 @@ paths:
                                         timestamp:
                                             type: string
                                             description: Create/Update timestamp of associated person
+
+    /people/{person_id}/notes:
+        post:
+            operationId: notes.create
+            tags:
+                - notes
+            summary: Create a note associated with a person
+            description: Create a note associated with a person
+            parameters:
+                - name: person_id
+                  in: path
+                  description: Id of person associated with note
+                  type: integer
+                  required: True
+                - name: note
+                  in: body
+                  description: Text content of the note to create
+                  required: True
+                  schema:
+                      type: object
+                      properties:
+                          content:
+                              type: string
+                              description: Text of the note to create
+            responses:
+                201:
+                    description: Successfully created a note
+                    schema:
+                        properties:
+                            person_id:
+                                type: integer
+                                description: Id of the person associated with the note
+                            note_id:
+                                type: integer
+                                description: Id of the created note
+                            content:
+                                type: string
+                                description: Text content of the note
+                            timestamp:
+                                type: string
+                                description: Create/Update timestamp of the person record
