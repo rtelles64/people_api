@@ -132,3 +132,28 @@ class PersonSchema(ma.ModelSchema):
     # RECALL: many = True indicates a one-to-many relationship, so Marshmallow
     #         will serialize all related notes
     notes = fields.Nested('PersonNoteSchema', default=[], many=True)
+
+
+# The PersonNoteSchema class defines what a Note object looks like as
+# Marshmallow serializes the notes list
+class PersonNoteSchema(ma.ModelSchema):
+    '''
+    This class exists to get around a recursion issue
+
+    Parent: ma.ModelSchema
+
+    Attributes
+    ----------
+    note_id : int
+        The unique id of a note in the note table
+    person_id : int
+        A number corresponding to the owner of the note
+    content : str
+        The actual text of the note
+    timestamp : str
+        The string representation of a Person/Note timestamp
+    '''
+    note_id = fields.Int()
+    person_id = fields.Int()
+    content = fields.Str()
+    timestamp = fields.Str()
