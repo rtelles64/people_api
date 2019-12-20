@@ -284,3 +284,104 @@ paths:
                             timestamp:
                                 type: string
                                 description: Create/Update timestamp of the person record
+
+    /people/{person_id}/notes/{note_id}:
+        get:
+            operationId: notes.read_one
+            tags:
+                - notes
+            summary: Read a particular note associated with a person
+            description: Read a particular note associated with a person
+            parameters:
+                - name: person_id
+                  in: path
+                  description: Id of person associated with note
+                  type: integer
+                  required: True
+                - name: note_id
+                  in: path
+                  description: Id of note
+                  type: integer
+                  required: True
+            responses:
+                200:
+                    description: Successfully read note for a person
+                    schema:
+                        type: object
+                        properties:
+                            note_id:
+                                type: integer
+                                description: Id of the note
+                            person_id:
+                                type: integer
+                                description: Id of the person note associated with
+                            content:
+                                type: string
+                                description: Text content of the note
+                            timestamp:
+                                type: string
+                                description: Creation/Update timestamp of the note record
+
+        put:
+            operationId: notes.update
+            tags:
+                - notes
+            summary: Update a note associated with a person
+            description: Update a note associated with a person
+            parameters:
+                - name: person_id
+                  in: path
+                  description: Id the person to update
+                  type: integer
+                  required: True
+                - name: note_id
+                  in: path
+                  description: Id of the note associated with a person
+                  type: integer
+                  required: True
+                - name: note
+                  in: body
+                  schema:
+                      type: object
+                      properties:
+                          content:
+                              type: string
+                              description: Text content of the note to be updated
+            responses:
+                200:
+                    description: Successfully updated note
+                    schema:
+                        properties:
+                            note_id:
+                                type: string
+                                description: Id of the ntoe associated with a person
+                            person_id:
+                                type: integer
+                                description: Id of the person in the database
+                            content:
+                                type: string
+                                description: Text content of the updated note
+                            timestamp:
+                                type: string
+                                description: Creation/Update timestamp of the note record
+
+        delete:
+            operationId: notes.delete
+            tags:
+                - notes
+            summary: Delete a note associated with a person
+            description: Delete a note associated with a person
+            parameters:
+                - name: person_id
+                  in: path
+                  description: Id of person associated with note
+                  type: integer
+                  required: True
+                - name: note_id
+                  in: path
+                  description: Id of note
+                  type: integer
+                  required: True
+            responses:
+                200:
+                    description: Successfully deleted a note
