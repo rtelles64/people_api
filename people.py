@@ -5,7 +5,7 @@
 
 # Project modules
 from config import db
-from models import Note, NoteSchema, Person, PersonSchema
+from models import Note, Person, PersonSchema
 
 # System modules
 from datetime import datetime
