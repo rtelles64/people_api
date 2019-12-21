@@ -192,3 +192,26 @@ class NoteSchema(ma.ModelSchema):
     # backref='person'. It is nested but because it doesn't have a many=True
     # parameter, there is only a single person connected
     person = fields.Nested('NotePersonSchema', default=None)
+
+
+class NotePersonSchema(ma.ModelSchema):
+    '''
+    This class exists to get around a recursion issue
+
+    Parent: ma.ModelSchema
+
+    Attributes
+    ----------
+    person_id : int
+        The unique id of a person in the person table
+    lname : str
+        Last name corresponding to the owner of the note
+    fname : str
+        First name corresponding to the owner of the note
+    timestamp : str
+        The string representation of a Person/Note timestamp
+    '''
+    person_id = fields.Int()
+    lname = fields.Str()
+    fname = fields.Str()
+    timestamp.fields.Str()
