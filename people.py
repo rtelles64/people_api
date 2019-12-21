@@ -5,7 +5,7 @@
 
 # Project modules
 from config import db
-from models import Person, PersonSchema
+from models import Note, NoteSchema, Person, PersonSchema
 
 # System modules
 from datetime import datetime
@@ -26,24 +26,24 @@ def get_timestamp():
     return datetime.now().strftime(("%Y-%m-%d %H:%M:%S"))
 
 
-# Data to serve with our API
-PEOPLE = {
-    "Farrell": {
-        "fname": "Doug",
-        "lname": "Farrell",
-        "timestamp": get_timestamp()
-    },
-    "Brockman": {
-        "fname": "Kent",
-        "lname": "Brockman",
-        "timestamp": get_timestamp()
-    },
-    "Easter": {
-        "fname": "Bunny",
-        "lname": "Easter",
-        "timestamp": get_timestamp()
-    },
-}
+# Preliminary Data to serve with our API
+# PEOPLE = {
+#     "Farrell": {
+#         "fname": "Doug",
+#         "lname": "Farrell",
+#         "timestamp": get_timestamp()
+#     },
+#     "Brockman": {
+#         "fname": "Kent",
+#         "lname": "Brockman",
+#         "timestamp": get_timestamp()
+#     },
+#     "Easter": {
+#         "fname": "Bunny",
+#         "lname": "Easter",
+#         "timestamp": get_timestamp()
+#     },
+# }
 
 
 # Create a handler for our read (GET) people
@@ -66,7 +66,8 @@ def read_all():
 
     # Return an object having a data attribute that Connexion can convert to
     # JSON
-    return person_schema.dump(people).data
+    data = person_schema.dump(people).data
+    return data
 
 
 # Create handler for our read where an lname parameter is provided
@@ -86,14 +87,27 @@ def read_one(person_id):
         Person matching ID
     '''
     # Get the person requested
-    person = Person.query.filter(Person.person_id == person_id).one_or_none()
+    # The .outerjoin (left outer join in SQL) is necessary for the case where
+    # a user of the application has created a new Person, which has no notes
+    # related to it. Outer join ensures the SQL query returns a Person, even
+    # if there are no note rows to join with
+    # A join is like an AND operation and returns nothing if a Person exists
+    # but has no Notes
+    # An outer join is an OR operation which returns a Person even if it has
+    # no Notes
+    person = (Person.query
+        .filter(Person.person_id == person_id)
+        .outerjoin(Note)
+        .one_or_none()
+    )
 
     # Did we find a person?
     if person is not None:
         # Serialize the data for the response
         person_schema = PersonSchema()
+        data = person_schema.dump(person).data
 
-        return person_schema.dump(person).data
+        return data
     # Otherwise, nope, not found
     else:
         abort(404, f'Person with Id: {person_id} not found')
@@ -119,10 +133,11 @@ def create(person):
     fname = person.get("fname")
     lname = person.get("lname")
 
-    existing_person = Person.query \
-        .filter(Person.fname == fname) \
-        .filter(Person.lname == lname) \
+    existing_person = (Person.query
+        .filter(Person.fname == fname)
+        .filter(Person.lname == lname)
         .one_or_none()
+    )
 
     # Can we insert this person?
     if existing_person is None:
@@ -135,63 +150,81 @@ def create(person):
         db.session.commit()
 
         # Serialize and return the newly created person in the response
-        return schema.dump(new_person).data, 201
+        data = schema.dump(new_person).data
+        return data, 201
     # Otherwise, they exist, that's an error
     else:
         abort(409, f'Person {fname} {lname} already exists!')
 
 
-def update(lname, person):
+def update(person_id, person):
     '''
     This function updates an existing person in the people structure
 
     Parameters
     ----------
-    lname: str
-    person: PERSON
+    person_id: int
+        Id of the person to update in the people structure
+    person: Person
+        Person to update
 
     Returns
     -------
-    PEOPLE
+    Person
         Updated person structure
     '''
-    # Does the person exist in people?
-    if lname in PEOPLE:
-        PEOPLE[lname]["fname"] = person.get("fname")
-        PEOPLE[lname]["timestamp"] = get_timestamp()
+    # Get the person requested from the db into session
+    update_person = Person.query.filter(
+        Person.person_id == person_id
+    ).one_or_none()
 
-        return PEOPLE[lname]
+    # Did we find an existing person?
+    if update_person is not None:
+        # Turn the passed in person into a db object
+        schema = PersonSchema()
+        update = schema.load(person, session=db.session).data
+
+        # Set the id to the person we want to update
+        update.person_id = update_person.person_id
+
+        # Merge the new object into the old and commit it to the db
+        db.session.merge(update)
+        db.session.commit()
+
+        # Return the updated person in the response
+        data = schema.dump(update_person).data
+
+        return data, 200
     # Otherwise, nope, that's an error
     else:
-        abort(
-            404, "Person with last name {lname} not found".format(lname=lname)
-        )
+        abort(404, f'Person with Id {person_id} not found')
 
 
-def delete(lname):
+def delete(person_id):
     '''
     This function deletes a person from the people structure
 
     Parameters
     ----------
-    lname: str
-        Last name of person to delete
+    person_id: int
+        Id of the person to delete
 
     Returns
     -------
     200
         On successful delete
-    401
+    404
         If not found
     '''
-    # Does the person to delete exist?
-    if lname in PEOPLE:
-        del PEOPLE[lname]
-        return make_response(
-            "{lname} successfully deleted".format(lname=lname), 200
-        )
+    # Get the person requested
+    person = Person.query.filter(Person.person_id == person_id).one_or_none()
+
+    # Did we find a person?
+    if person is not None:
+        db.session.delete(person)
+        db.session.commit()
+
+        return make_response(f'Person {person_id} successfully deleted', 200)
     # Otherwise, nope, person to delete not found
     else:
-        abort(
-            404, "Person with last name {lname} not found".format(lname=lname)
-        )
+        abort(404, f'Person with Id {person_id} not found')
