@@ -102,7 +102,7 @@ class Note(db.Model):
 
 class PersonSchema(ma.ModelSchema):
     '''
-    Defines how the attributes of a class will be converted into JSON-friendly
+    Defines how the attributes of Person will be converted into JSON-friendly
     formats
 
     Parent: ma.ModelSchema
@@ -157,3 +157,38 @@ class PersonNoteSchema(ma.ModelSchema):
     person_id = fields.Int()
     content = fields.Str()
     timestamp = fields.Str()
+
+
+class NoteSchema(ma.ModelSchema):
+    '''
+    Defines how the attributes of Note will be converted into JSON-friendly
+    formats
+
+    Parent: ma.ModelSchema
+
+    Attributes
+    ----------
+    person : Person
+        Person related to a Note, default is None
+    '''
+    class Meta:
+        '''
+        Required by ModelSchema. Used to find the SQLAlchemy model Note and
+        the db.session in order to extract Note attributes and their types in
+        order to serialize/deserialize them.
+
+        Attributes
+        ----------
+        model : Note
+            The SQLAlchemy model to use to serialize/deserialize data
+        sqla_session: db.session
+            The database session to use to introspect and determine attribute
+            data types
+        '''
+        model = Note
+        sqla_session = db.session
+
+    # This attribute comes from the db.relationship definition parameter
+    # backref='person'. It is nested but because it doesn't have a many=True
+    # parameter, there is only a single person connected
+    person = fields.Nested('NotePersonSchema', default=None)
