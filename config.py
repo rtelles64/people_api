@@ -20,7 +20,7 @@ app = connex_app.app
 # - causes SQLAlchemy to echo SQL statements to the console (useful to debug
 #   problems when building database programs)
 # - Set to False for production environments
-app.config['SQLALCHEMY_ECHO'] = True
+app.config['SQLALCHEMY_ECHO'] = False
 # SQLALCHEMY_DATABASE_URI
 # - sqlite://// - tells SQLAlchemy to use SQLite as the database
 # - people.db - the database file
