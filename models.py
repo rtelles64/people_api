@@ -1,5 +1,6 @@
 from datetime import datetime
 from config import db, ma
+from marshmallow import fields
 
 # NOTE: Marshmallow is the module that translates SQLAlchemy objects into
 #       Python objects suitable for creating JSON strings
@@ -214,4 +215,4 @@ class NotePersonSchema(ma.ModelSchema):
     person_id = fields.Int()
     lname = fields.Str()
     fname = fields.Str()
-    timestamp.fields.Str()
+    timestamp = fields.Str()
