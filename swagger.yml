@@ -210,7 +210,7 @@ paths:
             operationId: notes.read_all
             tags:
                 - notes
-            summar: Read the entire set of notes for all people, sorted by timestamp
+            summary: Read the entire set of notes for all people, sorted by timestamp
             description: Read the entire set of notes for all people, sorted by timestamp
             responses:
                 200:
