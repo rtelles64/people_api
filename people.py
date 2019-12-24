@@ -95,8 +95,8 @@ def read_one(person_id):
     # but has no Notes
     # An outer join is an OR operation which returns a Person even if it has
     # no Notes
-    person = (Person.query
-        .filter(Person.person_id == person_id)
+    person = (
+        Person.query.filter(Person.person_id == person_id)
         .outerjoin(Note)
         .one_or_none()
     )
@@ -133,8 +133,8 @@ def create(person):
     fname = person.get("fname")
     lname = person.get("lname")
 
-    existing_person = (Person.query
-        .filter(Person.fname == fname)
+    existing_person = (
+        Person.query.filter(Person.fname == fname)
         .filter(Person.lname == lname)
         .one_or_none()
     )
