@@ -18,6 +18,7 @@ marshmallow==3.3.0
 marshmallow-sqlalchemy==0.21.0
 more-itertools==8.0.2
 openapi-spec-validator==0.2.8
+pathlib==1.0.1
 pyrsistent==0.15.6
 PyYAML==5.2
 requests==2.22.0
