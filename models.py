@@ -114,7 +114,7 @@ class PersonSchema(ma.ModelSchema):
         List of notes related to a Person, default is empty list
     '''
     def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+        super().__init__()
 
 
     class Meta:
@@ -159,7 +159,7 @@ class PersonNoteSchema(ma.ModelSchema):
         The string representation of a Person/Note timestamp
     '''
     def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+        super().__init__()
 
 
     note_id = fields.Int()
@@ -181,7 +181,7 @@ class NoteSchema(ma.ModelSchema):
         Person related to a Note, default is None
     '''
     def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+        super().__init__()
 
 
     class Meta:
@@ -225,9 +225,9 @@ class NotePersonSchema(ma.ModelSchema):
         The string representation of a Person/Note timestamp
     '''
     def __init__(self, **kwargs):
-        super().__init__(strict=True, **kwargs)
+        super().__init__()
 
-        
+
     person_id = fields.Int()
     lname = fields.Str()
     fname = fields.Str()
