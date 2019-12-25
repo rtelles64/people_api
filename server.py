@@ -1,22 +1,23 @@
-from flask import Flask, render_template
+from flask import render_template
 
-import connexion
+import config
 
 # Create application instance
 # USING FLASK
 # app = Flask(__name__, template_folder="templates")
 
 # USING CONNECTION
-app = connexion.App(__name__, specification_dir='./')
+connex_app = config.connex_app
 
 # Read the swagger.yml file to configure the endpoints
-app.add_api('swagger.yml')
+connex_app.add_api('swagger.yml')
+
 
 # Create URL route for "/"
-@app.route('/')
+@connex_app.route('/')
 def home():
     '''
-    Just reponds to the browser URL
+    Just reponds to the browser URL localhost:5000/
 
     Returns
     -------
@@ -26,6 +27,44 @@ def home():
     return render_template('home.html')
 
 
+# Create URL route for '/people'
+@connex_app.route('/people')
+@connex_app.route('/people/<int:person_id>')
+def people(person_id=''):
+    '''
+    This function responds to the URL localhost:5000/people
+
+    Parameters
+    ----------
+    person_id : int, optional
+        Id of the person to retrieve (default is empty)
+
+    Returns
+    -------
+    str
+        The rendered template 'people.html'
+    '''
+    return render_template('people.html', person_id=person_id)
+
+
+# Create URL for notes
+@connex_app.route('/people/<int:person_id>')
+@connex_app.route('/people/<int:person_id>/notes')
+@connex_app.route('/people/<int:person_id>/notes/<int:note_id>')
+def notes(person_id, note_id=''):
+    '''
+    This function responds to the URL localhost:5000/notes/<person_id>
+
+    Parameters
+    ----------
+    person_id : int
+        Id of person to retrieve
+    note_id : int, optional
+        Id of note to view (default is empty)
+    '''
+    return render_template('notes.html', person_id=person_id, note_id=note_id)
+
+
 # If running in stand alone mode, run the app
 if __name__ == '__main__':
-    app.run(host='0.0.0.0', port=5000, debug=True)
+    connex_app.run(debug=True)
