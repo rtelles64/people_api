@@ -113,6 +113,10 @@ class PersonSchema(ma.ModelSchema):
     notes : list
         List of notes related to a Person, default is empty list
     '''
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+
     class Meta:
         '''
         Required by ModelSchema. Used to find the SQLAlchemy model Person and
@@ -154,6 +158,10 @@ class PersonNoteSchema(ma.ModelSchema):
     timestamp : str
         The string representation of a Person/Note timestamp
     '''
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+
     note_id = fields.Int()
     person_id = fields.Int()
     content = fields.Str()
@@ -172,6 +180,10 @@ class NoteSchema(ma.ModelSchema):
     person : Person
         Person related to a Note, default is None
     '''
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+
     class Meta:
         '''
         Required by ModelSchema. Used to find the SQLAlchemy model Note and
@@ -212,6 +224,10 @@ class NotePersonSchema(ma.ModelSchema):
     timestamp : str
         The string representation of a Person/Note timestamp
     '''
+    def __init__(self, **kwargs):
+        super().__init__(strict=True, **kwargs)
+
+        
     person_id = fields.Int()
     lname = fields.Str()
     fname = fields.Str()
