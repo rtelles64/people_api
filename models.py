@@ -224,7 +224,6 @@ class NotePersonSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__()
 
-
     person_id = fields.Int()
     lname = fields.Str()
     fname = fields.Str()
