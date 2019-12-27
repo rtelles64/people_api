@@ -66,7 +66,7 @@ def read_all():
 
     # Return an object having a data attribute that Connexion can convert to
     # JSON
-    data = person_schema.dumps(people)
+    data = person_schema.dump(people)
     return data
 
 
@@ -105,7 +105,7 @@ def read_one(person_id):
     if person is not None:
         # Serialize the data for the response
         person_schema = PersonSchema()
-        data = person_schema.dumps(person)
+        data = person_schema.dump(person)
 
         return data
     # Otherwise, nope, not found
@@ -150,7 +150,7 @@ def create(person):
         db.session.commit()
 
         # Serialize and return the newly created person in the response
-        data = schema.dumps(new_person)
+        data = schema.dump(new_person)
         return data, 201
     # Otherwise, they exist, that's an error
     else:
@@ -192,7 +192,7 @@ def update(person_id, person):
         db.session.commit()
 
         # Return the updated person in the response
-        data = schema.dumps(update_person)
+        data = schema.dump(update_person)
 
         return data, 200
     # Otherwise, nope, that's an error
