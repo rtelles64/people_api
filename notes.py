@@ -21,7 +21,7 @@ def read_all():
 
     # Serialize the list of notes from our data
     note_schema = NoteSchema(many=True, exclude=['person.notes'])
-    data = note_schema.dump(notes).data
+    data = note_schema.dumps(notes)
 
     return data
 
@@ -56,7 +56,7 @@ def read_one(person_id, note_id):
     # Was a note found?
     if note is not None:
         note_schema = NoteSchema()
-        data = note_schema.dump(note).data
+        data = note_schema.dumps(note)
 
         return data
 
@@ -97,7 +97,7 @@ def create(person_id, note):
     db.session.commit()
 
     # Serialize and return the newly created note in the response
-    data = schema.dump(new_note).data
+    data = schema.dumps(new_note)
 
     return data, 201
 
@@ -141,7 +141,7 @@ def update(person_id, note_id, note):
         db.session.commit()
 
         # Return updated note in the response
-        data = schema.dump(update_note).data
+        data = schema.dumps(update_note)
 
         return data, 200
     # Otherwise, we didn't find the note
