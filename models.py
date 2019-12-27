@@ -116,7 +116,6 @@ class PersonSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__()
 
-
     class Meta:
         '''
         Required by ModelSchema. Used to find the SQLAlchemy model Person and
@@ -161,7 +160,6 @@ class PersonNoteSchema(ma.ModelSchema):
     def __init__(self, **kwargs):
         super().__init__()
 
-
     note_id = fields.Int()
     person_id = fields.Int()
     content = fields.Str()
@@ -182,7 +180,6 @@ class NoteSchema(ma.ModelSchema):
     '''
     def __init__(self, **kwargs):
         super().__init__()
-
 
     class Meta:
         '''
