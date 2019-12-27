@@ -24,8 +24,8 @@ app.config['SQLALCHEMY_ECHO'] = False
 # SQLALCHEMY_DATABASE_URI
 # - sqlite://// - tells SQLAlchemy to use SQLite as the database
 # - people.db - the database file
-app.config['SQLALCHEMY_DATABASE_URI'] = ('sqlite:////' +
-                                         os.path.join(basedir, 'people.db'))
+sqlite_url = "sqlite:////" + os.path.join(basedir, "people.db")
+app.config['SQLALCHEMY_DATABASE_URI'] = sqlite_url
 # SQLALCHEMY_TRACK_MODIFICATIONS = False
 # - Turns off SQLAlchemy event system
 # - The event system generates events useful in event-driven programs but adds
