@@ -1,102 +1,116 @@
-/*
+/**
  * JavaScript file for the Home page
  */
 
-// Create the namespace instance
-let ns = {};
+/* jshint esversion: 8 */
 
-// Create the model instance
-ns.model = (function () {
-    'use strict';
-
-    // Return the API
-    return {
-        'read': function () {
-            let ajax_options = {
-                type: 'GET',
-                url: '/api/notes',
-                accepts: 'application/json',
-                dataType: 'json'
-            };
-            return $.ajax(ajax_options);
-        }
-    };
-}());
-
-
-// Create the view instance
-ns.view = (function () {
-    'use strict';
-
-    var $table = $(".blog table");
-
-    // Return the API
-    return {
-        build_table: function (data) {
-            let source = $('#blog-table-template').html(),
-                template = Handlebars.compile(source),
-                html;
-
-            // Create the HTML from the template and notes
-            html = template({notes: data});
-
-            // Append the rows to the table tbody
-            $table.append(html);
-        },
-        error: function (error_msg) {
-            $('.error')
-                .text(error_msg)
-                .css('visibility', 'visible');
-            setTimeout(function () {
-                $('.error').fadeOut();
-            }, 2000)
-        }
-    };
-}());
+/**
+ * This is the model class which provides access to the server REST API
+ * @type {{}}
+ */
+class Model {
+    async read() {
+        let options = {
+            method: "GET",
+            cache: "no-cache",
+            headers: {
+                "Content-Type": "application/json"
+            }
+        };
+        // call the REST endpoint and wait for data
+        let response = await fetch("/api/notes", options);
+        let data = await response.json();
+        return data;
+    }
+}
 
 
-// Create the controller instance
-ns.controller = (function (m, v) {
-    'use strict';
-
-    let model = m,
-        view = v;
-
-    // Get the note data from the model after the controller is done initializing
-    setTimeout(function () {
-
-        // Attach event handlers to the promise returned by model.read()
-        model.read()
-            .done(function (data) {
-                view.build_table(data);
-            })
-            .fail(function (xhr, textStatus, errorThrown) {
-                error_handler(xhr, textStatus, errorThrown);
-            });
-    }, 100);
-
-    // generic error handler
-    function error_handler(xhr, textStatus, errorThrown) {
-        let error_msg = `${textStatus}: ${errorThrown} - ${xhr.responseJSON.detail}`;
-
-        view.error(error_msg);
-        console.log(error_msg);
+/**
+ * This is the view class which provides access to the DOM
+ */
+class View {
+    constructor() {
+        this.table = document.querySelector(".blog table");
+        this.error = document.querySelector(".error");
     }
 
-    // handle application events
-    $('table').on('dblclick', 'tbody td.name', function (e) {
-        let $target = $(e.target).parent(),
-            person_id = $target.data('person_id');
+    buildTable(notes) {
+        let tbody = this.table.createTBody();
+        let html = "";
 
-        window.location = `/people/${person_id}`;
+        // Iterate over the notes and build the table
+        notes.forEach((note) => {
+            html += `
+            <tr data-person_id="${note.person.person_id}" data-note_id="${note.note_id}">
+                <td class="timestamp">${note.timestamp}</td>
+                <td class="name">${note.person.fname} ${note.person.lname}</td>
+                <td class="content">${note.content}</td>
+            </tr>`;
+        });
+        // Replace the tbody with our new content
+        tbody.innerHTML = html;
+    }
 
-    });
+    errorMessage(message) {
+        this.error.innerHTML = message;
+        this.error.classList.remove("hidden");
+        this.error.classList.add("visible");
+        setTimeout(() => {
+            this.error.classList.remove("visible");
+            this.error.classList.add("hidden");
+        }, 2000);
+    }
+}
 
-    $('table').on('dblclick', 'tbody td.content', function (e) {
-        let $target = $(e.target).parent(),
-            person_id = $target.data('person_id'),
-            note_id = $target.data('note_id');
 
-        window.location = `people/${person_id}/notes/${note_id}`;
-    });
-}(ns.model, ns.view));
+/**
+ * This is the controller class for the user interaction
+ */
+class Controller {
+    constructor(model, view) {
+        this.model = model;
+        this.view = view;
+
+        this.initialize();
+    }
+    async initialize() {
+        try {
+            let notes = await this.model.read();
+            this.view.buildTable(notes);
+        } catch(err) {
+            this.view.errorMessage(err);
+        }
+
+        // handle application events
+        document.querySelector("table tbody").addEventListener("dblclick", (evt) => {
+            let target = evt.target,
+                parent = target.parentElement;
+
+            // is this the name td?
+            if (target.classList.contains("name")) {
+                let person_id = parent.getAttribute("data-person_id");
+
+                window.location = `/people/${person_id}`;
+
+            // is this the content td
+            } else if (target.classList.contains("content")) {
+                let person_id = parent.getAttribute("data-person_id"),
+                    note_id = parent.getAttribute("data-note_id");
+
+                window.location = `people/${person_id}/notes/${note_id}`;
+            }
+        });
+    }
+}
+
+// Create the MVC components
+const model = new Model();
+const view = new View();
+const controller = new Controller(model, view);
+
+// export the MVC components as the default
+export default {
+    model,
+    view,
+    controller
+};
